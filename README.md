@@ -3,6 +3,8 @@
 
 仅供娱乐和装X
 
+![1]
+
 ### 下载
 已上架到酷安市场
 
@@ -12,8 +14,7 @@
 YzyCoding/PushVoiceBroadcast：https://github.com/YzyCoding/PushVoiceBroadcast
 
 ### 截图
-[1]
-[2]
+![2]
 
 
 
