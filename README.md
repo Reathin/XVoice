@@ -12,3 +12,10 @@
 YzyCoding/PushVoiceBroadcast：https://github.com/YzyCoding/PushVoiceBroadcast
 
 ### 截图
+[1]
+[2]
+
+
+
+[1]:https://github.com/Rairmmd/XVoice/blob/master/screenshot/screenshot_1524236448.png
+[2]:https://github.com/Rairmmd/XVoice/blob/master/screenshot/screenshot_1524236455.png
