@@ -55,7 +55,7 @@ public class VoicePlay {
      * @param money
      */
     public void play(String money) {
-        play(money, false);
+        play(money, false, false);
     }
 
     /**
@@ -64,14 +64,17 @@ public class VoicePlay {
      * @param money
      * @param checkNum
      */
-    public void play(String money, boolean checkNum) {
-        VoiceBuilder voiceBuilder = new VoiceBuilder.Builder()
-                .start(VoiceConstants.SUCCESS)
-                .money(money)
-                .unit(VoiceConstants.YUAN)
-                .checkNum(checkNum)
-                .builder();
-        executeStart(voiceBuilder);
+    public void play(String money, boolean checkNum, boolean account) {
+        VoiceBuilder.Builder voiceBuilder = new VoiceBuilder.Builder();
+        if (!account) {
+            voiceBuilder.start(VoiceConstants.RECEIPT_SUCCESS);
+        } else {
+            voiceBuilder.start(VoiceConstants.ACCOUNT_SUCCESS);
+        }
+        voiceBuilder.money(money);
+        voiceBuilder.unit(VoiceConstants.YUAN);
+        voiceBuilder.checkNum(checkNum);
+        executeStart(voiceBuilder.builder());
     }
 
     /**

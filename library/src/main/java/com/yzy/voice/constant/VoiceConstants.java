@@ -25,7 +25,9 @@ public class VoiceConstants {
     //亿
     public static final String TEN_MILLION = "ten_million";
     //收款成功
-    public static final String SUCCESS = "success";
+    public static final String RECEIPT_SUCCESS = "receipt_success";
+    //到账
+    public static final String ACCOUNT_SUCCESS = "account_success";
     //元
     public static final String YUAN = "yuan";
 }

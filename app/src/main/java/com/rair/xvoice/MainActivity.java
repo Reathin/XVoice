@@ -1,14 +1,11 @@
 package com.rair.xvoice;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -75,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
     @Override
     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
         Record record = datas.get(position);
-        VoicePlay.with(this).play(record.getAmount(), isNumber);
+        VoicePlay.with(this).play(record.getAmount(), isNumber, true);
     }
 
     @OnClick({R.id.ll_play, R.id.iv_clear})
@@ -87,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
                     Toasty.info(this, "请输入金额").show();
                     return;
                 }
-                VoicePlay.with(this).play(amount, isNumber);
+                VoicePlay.with(this).play(amount, isNumber, true);
                 String content = getContentString(amount);
                 Record record = new Record();
                 record.setAmount(amount);

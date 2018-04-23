@@ -15,6 +15,7 @@ public class Record {
     private int id;
     private String amount;
     private String content;
+    private boolean isAccount;
 
     public int getId() {
         return id;
@@ -38,5 +39,13 @@ public class Record {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public boolean isAccount() {
+        return isAccount;
+    }
+
+    public void setAccount(boolean account) {
+        isAccount = account;
     }
 }
