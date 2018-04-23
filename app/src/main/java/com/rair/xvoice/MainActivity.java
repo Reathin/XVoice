@@ -39,11 +39,14 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
     LinearLayout llPlay;
     @BindView(R.id.switch_mode)
     Switch switchMode;
+    @BindView(R.id.switch_account)
+    Switch switchAccount;
     @BindView(R.id.iv_clear)
     ImageView ivClear;
     @BindView(R.id.rv_record_list)
     RecyclerView rvRecordList;
     private boolean isNumber;
+    private boolean isAccount;
     private ArrayList<Record> datas;
     private RecordAdapter adapter;
 
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
         adapter.bindToRecyclerView(rvRecordList);
         adapter.setEmptyView(R.layout.layout_empty);
         switchMode.setOnCheckedChangeListener((buttonView, isChecked) -> isNumber = isChecked);
+        switchAccount.setOnCheckedChangeListener((buttonView, isChecked) -> isAccount = isChecked);
     }
 
     @Override
@@ -72,7 +76,8 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
     @Override
     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
         Record record = datas.get(position);
-        VoicePlay.with(this).play(record.getAmount(), isNumber, true);
+        boolean account = record.isAccount();
+        VoicePlay.with(this).play(record.getAmount(), isNumber, account);
     }
 
     @OnClick({R.id.ll_play, R.id.iv_clear})
@@ -84,11 +89,12 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
                     Toasty.info(this, "请输入金额").show();
                     return;
                 }
-                VoicePlay.with(this).play(amount, isNumber, true);
+                VoicePlay.with(this).play(amount, isNumber, isAccount);
                 String content = getContentString(amount);
                 Record record = new Record();
                 record.setAmount(amount);
                 record.setContent(content);
+                record.setAccount(isAccount);
                 LiteOrmInstance.getLiteOrm().insert(record);
                 datas.add(record);
                 adapter.notifyDataSetChanged();
@@ -111,9 +117,16 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
                 .unit("yuan")
                 .checkNum(isNumber)
                 .builder();
-        StringBuilder text = new StringBuilder()
-                .append("输入金额: ").append(amount)
-                .append("\n");
+        StringBuilder text = new StringBuilder();
+        if (isAccount) {
+            text.append("播报类型: 支付宝到账");
+            text.append("\n");
+        }else {
+            text.append("播报类型: 支付宝收款");
+            text.append("\n");
+        }
+        text.append("输入金额: ").append(amount);
+        text.append("\n");
         if (isNumber) {
             text.append("全数字式: ").append(VoiceTextTemplate.genVoiceList(voiceBuilder).toString());
         } else {
@@ -132,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
     public boolean onOptionsItemSelected(MenuItem item) {
         new AlertDialog.Builder(this).setTitle("关于")
                 .setMessage("在抖音上看到很多支付宝到账语音播报的视频，感觉此乃装逼神器，就有了这个应用." +
-                        "\n\n作者：Rair\n微博：@Rairmmd\nGithub:Rairmmd\n同时感谢[YzyCoding]的开源实现.")
+                        "\n\n作者：Rair\n微博：@Rairmmd\n同时感谢[YzyCoding]的开源实现.")
                 .setPositiveButton("Rair的小群", (dialog, which) -> joinQQGroup("wSSf3_kFHNTnFd7iT498eRPDcQ4HsVwd"))
                 .setNegativeButton("知道了", null).show();
         return super.onOptionsItemSelected(item);

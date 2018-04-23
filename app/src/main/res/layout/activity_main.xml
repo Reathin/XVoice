@@ -63,17 +63,21 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="数字播报"
-            android:textColor="@color/textSecondary" />
-
         <Switch
             android:id="@+id/switch_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp" />
+            android:layout_marginStart="10dp"
+            android:text="数字播报"
+            android:textColor="@color/textSecondary" />
+
+        <Switch
+            android:id="@+id/switch_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="支付宝到账"
+            android:textColor="@color/textSecondary" />
 
         <View
             android:layout_width="0dp"

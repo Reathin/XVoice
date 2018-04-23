@@ -23,6 +23,11 @@ public class RecordAdapter extends BaseQuickAdapter<Record, BaseViewHolder> {
 
     @Override
     protected void convert(BaseViewHolder helper, Record item) {
+        if (item.isAccount()) {
+
+        } else {
+
+        }
         helper.setText(R.id.tv_record, item.getContent());
         helper.addOnClickListener(R.id.iv_play);
     }
