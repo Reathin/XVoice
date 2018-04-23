@@ -53,6 +53,19 @@
 
 # 确保JavaBean不被混淆-否则gson将无法将数据解析成具体对象
 -keep class com.rair.xvoice.bean.** { *; }
+#-keep class com.yzy.voice.** { *; }
+
+# 使用注解
+-keepattributes Signature
+-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
+
+# 模型数据需要序列化，不可混淆
+-keep class * implements java.io.Serializable { *; }
+
+-keep class com.google.gson.** { *; }
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.stream.** { *; }
+-keep class com.google.gson.examples.android.model.** { *; }
 
 # butterknife
 -keep class butterknife.** { *; }
@@ -74,4 +87,12 @@
 -keepclassmembers public class * extends com.chad.library.adapter.base.BaseViewHolder {
      <init>(android.view.View);
 }
+
+-keep public class com.litesuits.orm.LiteOrm { *; }
+-keep public class com.litesuits.orm.db.* { *; }
+-keep public class com.litesuits.orm.db.model.** { *; }
+-keep public class com.litesuits.orm.db.annotation.** { *; }
+-keep public class com.litesuits.orm.db.enums.** { *; }
+-keep public class com.litesuits.orm.log.* { *; }
+-keep public class com.litesuits.orm.db.assit.* { *; }
 
