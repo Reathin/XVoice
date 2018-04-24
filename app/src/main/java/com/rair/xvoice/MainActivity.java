@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements PermissionListene
     private RecordAdapter adapter;
     private File file;
     private MediaRecorder mMediaRecorder;
+    private ExecutorService threadPool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements PermissionListene
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
 
+        threadPool = Executors.newSingleThreadExecutor();
         datas = new ArrayList<>();
         datas.addAll(LiteOrmInstance.getLiteOrm().query(Record.class));
         adapter = new RecordAdapter(R.layout.layout_record_item, datas);
@@ -128,12 +132,12 @@ public class MainActivity extends AppCompatActivity implements PermissionListene
                 break;
             case R.id.iv_export:
                 VoicePlay.with(this).play(record.getAmount(), isNumber, account);
-                new Thread(new Runnable() {
+                threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
                         recorder();
                     }
-                }).start();
+                });
                 break;
             default:
                 break;
@@ -243,8 +247,9 @@ public class MainActivity extends AppCompatActivity implements PermissionListene
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        release();
         EventBus.getDefault().unregister(this);
+        threadPool.shutdownNow();
+        release();
     }
 
     private long exitTime;
