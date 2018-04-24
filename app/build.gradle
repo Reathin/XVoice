@@ -42,5 +42,4 @@ dependencies {
     implementation project(':library')
     implementation files('libs/lite-orm-1.9.2.jar')
     implementation 'com.yanzhenjie:permission:1.1.2'
-    implementation 'com.github.adrielcafe:AndroidAudioRecorder:0.3.0'
 }
