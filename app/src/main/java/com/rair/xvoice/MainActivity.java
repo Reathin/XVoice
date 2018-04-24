@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -152,9 +151,9 @@ public class MainActivity extends AppCompatActivity implements PermissionListene
     @Subscribe
     public void onEvent(PlayEvent event) {
         if (event.isComplete()) {
-            Log.i("Rair", "(MainActivity.java:110)-onEvent:->" + event.isComplete());
+            Toasty.info(this, "导出成功" + file.getPath()).show();
         } else {
-            Log.i("Rair", "(MainActivity.java:112)-onEvent:->" + event.isComplete());
+            Toasty.info(this, "导出失败").show();
         }
         release();
     }
