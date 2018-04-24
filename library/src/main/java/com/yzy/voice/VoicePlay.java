@@ -5,7 +5,10 @@ import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 
 import com.yzy.voice.constant.VoiceConstants;
+import com.yzy.voice.event.PlayEvent;
 import com.yzy.voice.util.FileUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.List;
@@ -105,13 +108,11 @@ public class VoicePlay {
      *
      * @param voicePlay
      */
-    private void start(final List<String> voicePlay) {
+    private void start(List<String> voicePlay) {
         synchronized (VoicePlay.this) {
-
             MediaPlayer mMediaPlayer = new MediaPlayer();
-            final CountDownLatch mCountDownLatch = new CountDownLatch(1);
+            CountDownLatch mCountDownLatch = new CountDownLatch(1);
             AssetFileDescriptor assetFileDescription = null;
-
             try {
                 final int[] counter = {0};
                 assetFileDescription = FileUtils.getAssetFileDescription(mContext,
@@ -125,7 +126,6 @@ public class VoicePlay {
                 mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
                     mediaPlayer.reset();
                     counter[0]++;
-
                     if (counter[0] < voicePlay.size()) {
                         try {
                             AssetFileDescriptor fileDescription2 = FileUtils.getAssetFileDescription(mContext,
@@ -138,17 +138,18 @@ public class VoicePlay {
                         } catch (IOException e) {
                             e.printStackTrace();
                             mCountDownLatch.countDown();
+                            EventBus.getDefault().post(new PlayEvent(false));
                         }
                     } else {
                         mediaPlayer.release();
                         mCountDownLatch.countDown();
+                        EventBus.getDefault().post(new PlayEvent(true));
                     }
                 });
-
-
             } catch (Exception e) {
                 e.printStackTrace();
                 mCountDownLatch.countDown();
+                EventBus.getDefault().post(new PlayEvent(false));
             } finally {
                 if (assetFileDescription != null) {
                     try {
@@ -158,7 +159,6 @@ public class VoicePlay {
                     }
                 }
             }
-
             try {
                 mCountDownLatch.await();
                 notifyAll();

@@ -21,7 +21,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -38,7 +38,9 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'com.github.GrenderG:Toasty:1.2.8'
-    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.35'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.35'
     implementation project(':library')
     implementation files('libs/lite-orm-1.9.2.jar')
+    implementation 'com.yanzhenjie:permission:1.1.2'
+    implementation 'com.github.adrielcafe:AndroidAudioRecorder:0.3.0'
 }

@@ -26,10 +26,19 @@
             android:textSize="14sp" />
 
         <ImageView
-            android:id="@+id/iv_play"
+            android:id="@+id/iv_export"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginStart="10dp"
+            android:background="@drawable/button_selector"
+            android:padding="3dp"
+            android:src="@mipmap/ic_export" />
+
+        <ImageView
+            android:id="@+id/iv_play"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="6dp"
             android:background="@drawable/button_selector"
             android:padding="3dp"
             android:src="@mipmap/ic_voice" />

@@ -1,13 +1,17 @@
 package com.rair.xvoice;
 
 import android.content.Intent;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,18 +24,29 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.rair.xvoice.adapter.RecordAdapter;
 import com.rair.xvoice.bean.Record;
 import com.rair.xvoice.db.LiteOrmInstance;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
+import com.yanzhenjie.permission.PermissionListener;
 import com.yzy.voice.VoiceBuilder;
 import com.yzy.voice.VoicePlay;
 import com.yzy.voice.VoiceTextTemplate;
+import com.yzy.voice.event.PlayEvent;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
 
-public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.OnItemClickListener, BaseQuickAdapter.OnItemChildClickListener {
+public class MainActivity extends AppCompatActivity implements PermissionListener,
+        BaseQuickAdapter.OnItemChildClickListener {
 
     @BindView(R.id.et_amount)
     EditText etAmount;
@@ -49,17 +64,19 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
     private boolean isAccount;
     private ArrayList<Record> datas;
     private RecordAdapter adapter;
+    private File file;
+    private MediaRecorder mMediaRecorder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
 
         datas = new ArrayList<>();
         datas.addAll(LiteOrmInstance.getLiteOrm().query(Record.class));
         adapter = new RecordAdapter(R.layout.layout_record_item, datas);
-        adapter.setOnItemClickListener(this);
         adapter.setOnItemChildClickListener(this);
 
         rvRecordList.setLayoutManager(new LinearLayoutManager(this));
@@ -67,17 +84,79 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
         adapter.setEmptyView(R.layout.layout_empty);
         switchMode.setOnCheckedChangeListener((buttonView, isChecked) -> isNumber = isChecked);
         switchAccount.setOnCheckedChangeListener((buttonView, isChecked) -> isAccount = isChecked);
+
+        AndPermission.with(this).callback(this)
+                .permission(Permission.MICROPHONE, Permission.STORAGE)
+                .start();
+    }
+
+
+    @Override
+    public void onSucceed(int requestCode, @NonNull List<String> grantPermissions) {
+        file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +
+                File.separator + System.currentTimeMillis() + ".mp3");
+    }
+
+    private void recorder() {
+        release();
+        mMediaRecorder = new MediaRecorder();
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        mMediaRecorder.setAudioSamplingRate(44100);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+        mMediaRecorder.setAudioEncodingBitRate(96000);
+        mMediaRecorder.setOutputFile(file.getAbsolutePath());
+        try {
+            mMediaRecorder.prepare();
+            mMediaRecorder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+    public void onFailed(int requestCode, @NonNull List<String> deniedPermissions) {
+
     }
 
     @Override
     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
         Record record = datas.get(position);
         boolean account = record.isAccount();
-        VoicePlay.with(this).play(record.getAmount(), isNumber, account);
+        switch (view.getId()) {
+            case R.id.iv_play:
+                VoicePlay.with(this).play(record.getAmount(), isNumber, account);
+                break;
+            case R.id.iv_export:
+                VoicePlay.with(this).play(record.getAmount(), isNumber, account);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        recorder();
+                    }
+                }).start();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void release() {
+        if (mMediaRecorder != null) {
+            mMediaRecorder.stop();
+            mMediaRecorder.release();
+        }
+        mMediaRecorder = null;
+    }
+
+    @Subscribe
+    public void onEvent(PlayEvent event) {
+        if (event.isComplete()) {
+            Log.i("Rair", "(MainActivity.java:110)-onEvent:->" + event.isComplete());
+        } else {
+            Log.i("Rair", "(MainActivity.java:112)-onEvent:->" + event.isComplete());
+        }
+        release();
     }
 
     @OnClick({R.id.ll_play, R.id.iv_clear})
@@ -121,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
         if (isAccount) {
             text.append("播报类型: 支付宝到账");
             text.append("\n");
-        }else {
+        } else {
             text.append("播报类型: 支付宝收款");
             text.append("\n");
         }
@@ -160,6 +239,13 @@ public class MainActivity extends AppCompatActivity implements BaseQuickAdapter.
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        release();
+        EventBus.getDefault().unregister(this);
     }
 
     private long exitTime;
