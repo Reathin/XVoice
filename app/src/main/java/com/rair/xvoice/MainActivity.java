@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements PermissionListene
     private void recorder() {
         release();
         mMediaRecorder = new MediaRecorder();
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         mMediaRecorder.setAudioSamplingRate(44100);
         mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
